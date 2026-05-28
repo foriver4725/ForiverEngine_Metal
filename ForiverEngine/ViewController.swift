@@ -7,7 +7,7 @@ final class ViewController: NSViewController {
     private var renderer: Renderer!
 
     override func loadView() {
-        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 900, height: 900))
+        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 800, height: 450))
     }
 
     override func viewDidLoad() {
@@ -20,6 +20,7 @@ final class ViewController: NSViewController {
         metalView = MTKView(frame: view.bounds, device: device)
         metalView.autoresizingMask = [.width, .height]
         metalView.clearColor = MTLClearColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        metalView.depthStencilPixelFormat = .depth32Float
 
         view.addSubview(metalView)
 

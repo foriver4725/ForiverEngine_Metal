@@ -10,7 +10,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let vc = ViewController()
 
         window = EscWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 900, height: 900),
+            contentRect: NSRect(x: 0, y: 0, width: 800, height: 450),
             styleMask: [.titled, .closable, .resizable, .miniaturizable],
             backing: .buffered,
             defer: false
