@@ -1,0 +1,71 @@
+# =========================
+# macOS
+# =========================
+.DS_Store
+
+# =========================
+# Xcode
+# =========================
+build/
+DerivedData/
+
+*.pbxuser
+!default.pbxuser
+
+*.mode1v3
+!default.mode1v3
+
+*.mode2v3
+!default.mode2v3
+
+*.perspectivev3
+!default.perspectivev3
+
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# =========================
+# Metal
+# =========================
+*.air
+*.metallib
+
+# =========================
+# C / C++
+# =========================
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# VSCode
+# =========================
+.vscode/
+
+# =========================
+# CLion / JetBrains
+# =========================
+.idea/
+cmake-build-*/
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
