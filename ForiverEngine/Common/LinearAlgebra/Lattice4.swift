@@ -1,3 +1,2 @@
 extension Lattice4 {
-
 }
