@@ -32,9 +32,9 @@ final class Renderer: NSObject, MTKViewDelegate {
 
     private var cubeTransform: Transform = Transform(
         position: .zero,
-        rotation: Quaternion(
-            angle: Float.pi * 3,
-            axis: Vector3(1, 5, 1.5).normed
+        rotation: Quaternion.fromAxisAngle(
+            axis: Vector3(1, 5, 1.5).normed,
+            angleRad: Float.pi * 3
         ),
         scale: .one
     )
@@ -246,9 +246,9 @@ final class Renderer: NSObject, MTKViewDelegate {
         let deltaTime: Float = 1.0 / 60.0
 
         cubeTransform.rotation =
-            Quaternion(
-                angle: Float.pi * deltaTime,
-                axis: .up
+            Quaternion.fromAxisAngle(
+                axis: .up,
+                angleRad: Float.pi * deltaTime,
             )
             * cubeTransform.rotation
 
