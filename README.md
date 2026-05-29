@@ -2,8 +2,10 @@
 
 Reimplementation of [ForiverEngine](ForiverEngine) with Metal on macOS
 
-## Platform
-macOS
+## Platform / Development Environment
+- macOS
+- Xcode
+- Swift
 
 ## Development History
 
