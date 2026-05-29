@@ -1,37 +1,41 @@
-import Foundation
 import simd
-import Metal
 
 struct Transform {
-    var position: SIMD3<Float> = .zero
-    var rotation: simd_quatf = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
-    var scale: SIMD3<Float> = SIMD3<Float>(1, 1, 1)
+    var position: Vector3
+    var rotation: Quaternion
+    var scale: Vector3
 
     static var identity: Transform {
-        Transform()
+        Transform(position: .zero, rotation: .identity, scale: .one)
     }
 
-    var right: SIMD3<Float> {
-        rotation.act(SIMD3<Float>(1, 0, 0))
+    var right: Vector3 {
+        rotation * Vector3.right
     }
 
-    var up: SIMD3<Float> {
-        rotation.act(SIMD3<Float>(0, 1, 0))
+    var up: Vector3 {
+        rotation * Vector3.up
     }
 
-    var forward: SIMD3<Float> {
-        rotation.act(SIMD3<Float>(0, 0, 1))
+    var forward: Vector3 {
+        rotation * Vector3.forward
     }
 
-    func modelMatrix() -> simd_float4x4 {
-        let s = simd_float4x4.scale(scale)
-        let r = simd_float4x4(rotation)
-        let t = simd_float4x4.translate(position)
+    func calculateModelMatrix() -> Matrix4x4 {
+        let s = Matrix4x4.scale(scale)
+        let r = Matrix4x4.rotate(rotation)
+        let t = Matrix4x4.translate(position)
 
         return t * r * s
     }
 
-    func inverseModelMatrix() -> simd_float4x4 {
-        modelMatrix().inverse
+    func calculateModelMatrixInversed() -> Matrix4x4 {
+        let sInv = Matrix4x4.scale(
+            Vector3(1 / scale.x, 1 / scale.y, 1 / scale.z)
+        )
+        let rInv = Matrix4x4.rotate(rotation.conjugate)
+        let tInv = Matrix4x4.translate(-position)
+
+        return sInv * rInv * tInv
     }
 }

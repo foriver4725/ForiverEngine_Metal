@@ -1,23 +1,23 @@
+import Darwin
 import Metal
 import MetalKit
 import simd
-import Darwin
 
 struct Uniforms {
-    var matrixMVP: simd_float4x4
-    var matrixMIT: simd_float4x4
+    var matrixMVP: Matrix4x4
+    var matrixMIT: Matrix4x4
 }
 
 struct FragmentUniforms {
     var selectingBlockWorldPosition: SIMD3<Int32>
     var isSelectingBlock: UInt32
-    var selectColor: SIMD4<Float>
+    var selectColor: Vector4
 
-    var directionalLightDirection: SIMD3<Float>
+    var directionalLightDirection: Vector3
     var _padding0: Float = 0
 
-    var directionalLightColor: SIMD4<Float>
-    var ambientLightColor: SIMD4<Float>
+    var directionalLightColor: Vector4
+    var ambientLightColor: Vector4
 }
 
 final class Renderer: NSObject, MTKViewDelegate {
@@ -30,9 +30,20 @@ final class Renderer: NSObject, MTKViewDelegate {
     private let textureArray: MTLTexture
     private let samplerState: MTLSamplerState
 
-    private var cubeTransform: Transform = Transform.identity
-    private var cameraTransform: CameraTransform = CameraTransform.perspective(
-        position: SIMD3<Float>(0, 0, -10), rotation: simd_quatf(), fov: Float.pi / 3, aspectRatio: 800.0 / 450.0)
+    private var cubeTransform: Transform = Transform(
+        position: .zero,
+        rotation: Quaternion(
+            angle: Float.pi * 3,
+            axis: Vector3(1, 5, 1.5).normed
+        ),
+        scale: .one
+    )
+    private var cameraTransform: CameraTransform = .perspective(
+        position: Vector3(0, 0, -5),
+        rotation: .identity,
+        fov: Float.pi / 3,
+        aspectRatio: 800.0 / 450.0
+    )
 
     init(metalView: MTKView) {
         guard let device = metalView.device else {
@@ -47,40 +58,42 @@ final class Renderer: NSObject, MTKViewDelegate {
         self.commandQueue = commandQueue
 
         guard let library = device.makeDefaultLibrary(),
-              let vertexFunction = library.makeFunction(name: "vertex_main"),
-              let fragmentFunction = library.makeFunction(name: "fragment_main") else {
+            let vertexFunction = library.makeFunction(name: "vertex_main"),
+            let fragmentFunction = library.makeFunction(name: "fragment_main")
+        else {
             fatalError("Failed to load shader functions")
         }
-        
+
         let vertexDescriptor = MTLVertexDescriptor()
 
         vertexDescriptor.attributes[0].format = .float4
-        vertexDescriptor.attributes[0].offset = 0
+        vertexDescriptor.attributes[0].offset = MemoryLayout<VertexData>.offset(
+            of: \.position
+        )!
         vertexDescriptor.attributes[0].bufferIndex = 0
 
         vertexDescriptor.attributes[1].format = .float2
-        vertexDescriptor.attributes[1].offset = MemoryLayout<SIMD4<Float>>.stride
+        vertexDescriptor.attributes[1].offset = MemoryLayout<VertexData>.offset(
+            of: \.uv
+        )!
         vertexDescriptor.attributes[1].bufferIndex = 0
 
         vertexDescriptor.attributes[2].format = .float3
-        vertexDescriptor.attributes[2].offset =
-            MemoryLayout<SIMD4<Float>>.stride +
-            MemoryLayout<SIMD2<Float>>.stride
+        vertexDescriptor.attributes[2].offset = MemoryLayout<VertexData>.offset(
+            of: \.normal
+        )!
         vertexDescriptor.attributes[2].bufferIndex = 0
 
         vertexDescriptor.attributes[3].format = .float3
-        vertexDescriptor.attributes[3].offset =
-            MemoryLayout<SIMD4<Float>>.stride +
-            MemoryLayout<SIMD2<Float>>.stride +
-            MemoryLayout<SIMD3<Float>>.stride
+        vertexDescriptor.attributes[3].offset = MemoryLayout<VertexData>.offset(
+            of: \.centerWorldPosition
+        )!
         vertexDescriptor.attributes[3].bufferIndex = 0
 
         vertexDescriptor.attributes[4].format = .uint
-        vertexDescriptor.attributes[4].offset =
-            MemoryLayout<SIMD4<Float>>.stride +
-            MemoryLayout<SIMD2<Float>>.stride +
-            MemoryLayout<SIMD3<Float>>.stride +
-            MemoryLayout<SIMD3<Float>>.stride
+        vertexDescriptor.attributes[4].offset = MemoryLayout<VertexData>.offset(
+            of: \.textureIndex
+        )!
         vertexDescriptor.attributes[4].bufferIndex = 0
 
         vertexDescriptor.layouts[0].stride = MemoryLayout<VertexData>.stride
@@ -91,10 +104,13 @@ final class Renderer: NSObject, MTKViewDelegate {
         descriptor.vertexDescriptor = vertexDescriptor
         descriptor.fragmentFunction = fragmentFunction
         descriptor.colorAttachments[0].pixelFormat = metalView.colorPixelFormat
-        descriptor.depthAttachmentPixelFormat = metalView.depthStencilPixelFormat
+        descriptor.depthAttachmentPixelFormat =
+            metalView.depthStencilPixelFormat
 
         do {
-            self.pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
+            self.pipelineState = try device.makeRenderPipelineState(
+                descriptor: descriptor
+            )
         } catch {
             fatalError("Failed to create pipeline state: \(error)")
         }
@@ -103,13 +119,20 @@ final class Renderer: NSObject, MTKViewDelegate {
         depthDescriptor.depthCompareFunction = .less
         depthDescriptor.isDepthWriteEnabled = true
 
-        guard let depthState = device.makeDepthStencilState(descriptor: depthDescriptor) else {
+        guard
+            let depthState = device.makeDepthStencilState(
+                descriptor: depthDescriptor
+            )
+        else {
             fatalError("Failed to create depth state")
         }
         self.depthState = depthState
 
         //TODO: fix textureIndex as the textureArray load error is fixed
-        let mesh = Mesh.createCube(centerWorldPosition: SIMD3<Float>(0, 0, 0), textureIndex: 2)
+        let mesh = Mesh.createCube(
+            centerWorldPosition: .zero,
+            textureIndex: 2
+        )
         self.meshBuffers = mesh.createMetalBuffers(device: device)
 
         self.textureArray = Renderer.createTextureArray(device)
@@ -125,9 +148,9 @@ final class Renderer: NSObject, MTKViewDelegate {
         let loader = MTKTextureLoader(device: device)
 
         let names = [
-//            "air_invalid", //TODO: Cannot load somewhat
+            //            "air_invalid", //TODO: Cannot load somewhat
             "dirt_sand",
-            "grass_stone"
+            "grass_stone",
         ]
 
         let sourceTextures: [MTLTexture] = names.map { name in
@@ -158,7 +181,8 @@ final class Renderer: NSObject, MTKViewDelegate {
         descriptor.arrayLength = sourceTextures.count
         descriptor.usage = [.shaderRead]
 
-        guard let textureArray = device.makeTexture(descriptor: descriptor) else {
+        guard let textureArray = device.makeTexture(descriptor: descriptor)
+        else {
             fatalError("Failed to create texture array")
         }
 
@@ -172,7 +196,11 @@ final class Renderer: NSObject, MTKViewDelegate {
                 sourceSlice: 0,
                 sourceLevel: 0,
                 sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-                sourceSize: MTLSize(width: texture.width, height: texture.height, depth: 1),
+                sourceSize: MTLSize(
+                    width: texture.width,
+                    height: texture.height,
+                    depth: 1
+                ),
                 to: textureArray,
                 destinationSlice: slice,
                 destinationLevel: 0,
@@ -187,14 +215,17 @@ final class Renderer: NSObject, MTKViewDelegate {
         return textureArray
     }
 
-    private static func createSamplerState(_ device: MTLDevice) -> MTLSamplerState {
+    private static func createSamplerState(_ device: MTLDevice)
+        -> MTLSamplerState
+    {
         let descriptor = MTLSamplerDescriptor()
         descriptor.minFilter = .nearest
         descriptor.magFilter = .nearest
         descriptor.sAddressMode = .repeat
         descriptor.tAddressMode = .repeat
 
-        guard let sampler = device.makeSamplerState(descriptor: descriptor) else {
+        guard let sampler = device.makeSamplerState(descriptor: descriptor)
+        else {
             fatalError("Failed to create sampler state")
         }
 
@@ -203,31 +234,40 @@ final class Renderer: NSObject, MTKViewDelegate {
 
     func draw(in view: MTKView) {
         guard let drawable = view.currentDrawable,
-              let renderPassDescriptor = view.currentRenderPassDescriptor,
-              let commandBuffer = commandQueue.makeCommandBuffer(),
-              let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else {
+            let renderPassDescriptor = view.currentRenderPassDescriptor,
+            let commandBuffer = commandQueue.makeCommandBuffer(),
+            let encoder = commandBuffer.makeRenderCommandEncoder(
+                descriptor: renderPassDescriptor
+            )
+        else {
             return
         }
 
         let deltaTime: Float = 1.0 / 60.0
-        
-        cubeTransform.rotation = simd_quatf(angle: Float.pi * deltaTime, axis: SIMD3<Float>(0, 1, 0)) * cubeTransform.rotation
+
+        cubeTransform.rotation =
+            Quaternion(
+                angle: Float.pi * deltaTime,
+                axis: .up
+            )
+            * cubeTransform.rotation
 
         var uniforms = Uniforms(
-            matrixMVP: cameraTransform.vpMatrix() * cubeTransform.modelMatrix(),
-            matrixMIT: cubeTransform.modelMatrix().inverse.transpose
+            matrixMVP: cameraTransform.calculateVPMatrix()
+                * cubeTransform.calculateModelMatrix(),
+            matrixMIT: cubeTransform.calculateModelMatrixInversed().transpose
         )
 
         var fragmentUniforms = FragmentUniforms(
             selectingBlockWorldPosition: SIMD3<Int32>(0, 0, 0),
             isSelectingBlock: 0,
-            selectColor: SIMD4<Float>(1, 1, 1, 0.35),
+            selectColor: Vector4(1, 1, 1, 0.35),
 
-            directionalLightDirection: SIMD3<Float>(0, -1, 0),
-            directionalLightColor: SIMD4<Float>(1, 1, 1, 1),
-            ambientLightColor: SIMD4<Float>(0.4, 0.4, 0.4, 1)
+            directionalLightDirection: Vector3(0, -1, 0),
+            directionalLightColor: Vector4(1, 1, 1, 1),
+            ambientLightColor: Vector4(0.4, 0.4, 0.4, 1)
         )
-        
+
         encoder.setRenderPipelineState(pipelineState)
         encoder.setDepthStencilState(depthState)
 

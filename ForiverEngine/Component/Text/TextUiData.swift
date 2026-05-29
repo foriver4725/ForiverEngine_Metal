@@ -1,13 +1,13 @@
-import simd
 import Metal
+import simd
 
 struct TextUiData {
     static let fontTextureTextLength = 16
 
     private(set) var data: [[Text.Data]]
-    private(set) var dataSize: SIMD2<Int>
+    private(set) var dataSize: Lattice2
 
-    static func createEmpty(dataSize: SIMD2<Int>) -> TextUiData {
+    static func createEmpty(dataSize: Lattice2) -> TextUiData {
         let row = Array(
             repeating: Text.Data.createDefault(),
             count: dataSize.x
@@ -20,7 +20,7 @@ struct TextUiData {
     }
 
     mutating func setText(
-        positionIndex: SIMD2<Int>,
+        positionIndex: Lattice2,
         text: Character,
         color: Color = Text.defaultColor
     ) {
