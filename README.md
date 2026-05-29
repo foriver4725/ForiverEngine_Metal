@@ -1,5 +1,7 @@
 # ForiverEngine_Metal
 
+Reimplementation of [ForiverEngine](ForiverEngine) with Metal on macOS
+
 ## Platform
 macOS
 
