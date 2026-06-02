@@ -1,15 +1,9 @@
 import Metal
 import simd
 
-struct VertexData {
-    var position: Vector4
-    var uv: Vector2
-    var normal: Vector3
-    var centerWorldPosition: Vector3
-    var textureIndex: UInt32
-}
+struct Mesh: MeshBase {
+    typealias VertexDataType = VertexData
 
-struct Mesh {
     var vertices: [VertexData] = []
     var indices: [UInt32] = []
 
@@ -211,35 +205,5 @@ struct Mesh {
         ]
 
         return mesh
-    }
-}
-
-extension Mesh {
-    func createMetalBuffers(device: MTLDevice) -> MeshBuffers {
-        guard
-            let vertexBuffer = device.makeBuffer(
-                bytes: vertices,
-                length: MemoryLayout<VertexData>.stride * vertices.count,
-                options: []
-            )
-        else {
-            fatalError("Failed to create vertex buffer")
-        }
-
-        guard
-            let indexBuffer = device.makeBuffer(
-                bytes: indices,
-                length: MemoryLayout<UInt32>.stride * indices.count,
-                options: []
-            )
-        else {
-            fatalError("Failed to create index buffer")
-        }
-
-        return MeshBuffers(
-            vertexBuffer: vertexBuffer,
-            indexBuffer: indexBuffer,
-            indexCount: indices.count
-        )
     }
 }
