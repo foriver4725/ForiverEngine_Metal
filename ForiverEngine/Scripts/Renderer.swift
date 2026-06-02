@@ -3,12 +3,12 @@ import Metal
 import MetalKit
 import simd
 
-struct Uniforms {
+struct Uniforms: BitwiseCopyable {
     var matrixMVP: Matrix4x4
     var matrixMIT: Matrix4x4
 }
 
-struct FragmentUniforms {
+struct FragmentUniforms: BitwiseCopyable {
     var selectingBlockWorldPosition: SIMD3<Int32>
     var isSelectingBlock: UInt32
     var selectColor: Vector4
@@ -38,6 +38,7 @@ final class Renderer: NSObject, MTKViewDelegate {
         ),
         scale: .one
     )
+
     private var cameraTransform: CameraTransform = .perspective(
         position: Vector3(0, 0, -5),
         rotation: .identity,
@@ -46,18 +47,19 @@ final class Renderer: NSObject, MTKViewDelegate {
     )
 
     init(metalView: MTKView) {
-        let standardObjects = MetalUtils.createStandardObjects(metalView: metalView)
+        let standardObjects =
+            MetalUtils.createStandardObjects(metalView: metalView)
+
         self.device = standardObjects.device
         self.commandQueue = standardObjects.commandQueue
-
-        let vertexDescriptor = VertexDescriptorFactory.createVertexDataDescriptor()
 
         self.pipelineState = MetalUtils.createGraphicsPipelineState(
             device: device,
             metalView: metalView,
             vertexFunctionName: "vertex_main",
             fragmentFunctionName: "fragment_main",
-            vertexDescriptor: vertexDescriptor,
+            vertexDescriptor:
+                VertexDescriptorFactory.createVertexDataDescriptor(),
             useDSV: true
         )
 
@@ -74,30 +76,32 @@ final class Renderer: NSObject, MTKViewDelegate {
             isSRGB: false
         )
 
+        let mesh = Mesh.createCube(
+            centerWorldPosition: .zero,
+            textureIndex: 2
+        )
+
+        self.meshBuffers = mesh.createMetalBuffers(device: device)
+
         super.init()
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-    }
-
-    private static func createSamplerState(_ device: MTLDevice)
-        -> MTLSamplerState
-    {
-        let descriptor = MTLSamplerDescriptor()
-        descriptor.minFilter = .nearest
-        descriptor.magFilter = .nearest
-        descriptor.sAddressMode = .repeat
-        descriptor.tAddressMode = .repeat
-
-        guard let sampler = device.makeSamplerState(descriptor: descriptor)
-        else {
-            fatalError("Failed to create sampler state")
-        }
-
-        return sampler
+        cameraTransform = .perspective(
+            position: Vector3(0, 0, -5),
+            rotation: .identity,
+            fov: Float.pi / 3,
+            aspectRatio: Float(size.width / size.height)
+        )
     }
 
     func draw(in view: MTKView) {
+        guard let drawable = view.currentDrawable,
+            let renderPassDescriptor = view.currentRenderPassDescriptor
+        else {
+            return
+        }
+
         let deltaTime: Float = 1.0 / 60.0
 
         cubeTransform.rotation =
@@ -123,15 +127,18 @@ final class Renderer: NSObject, MTKViewDelegate {
             ambientLightColor: Vector4(0.4, 0.4, 0.4, 1)
         )
 
-        MetalUtils.drawIndexed(
-            view: view,
+        MetalUtils.draw(
             commandQueue: commandQueue,
+            renderPassDescriptor: renderPassDescriptor,
+            drawable: drawable,
             pipelineState: pipelineState,
             depthState: depthState,
-            meshBuffers: meshBuffers,
-            textureArray: textureArray,
+            vertexBuffer: meshBuffers.vertexBuffer,
+            indexBuffer: meshBuffers.indexBuffer,
+            indexCount: meshBuffers.indexCount,
+            textures: [textureArray],
             samplerState: samplerState,
-            uniforms: &uniforms,
+            vertexUniforms: &uniforms,
             fragmentUniforms: &fragmentUniforms
         )
     }
