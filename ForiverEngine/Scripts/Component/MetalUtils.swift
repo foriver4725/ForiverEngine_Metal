@@ -88,42 +88,6 @@ enum MetalUtils {
         return sampler
     }
 
-    static func loadTexture(
-        device: MTLDevice,
-        names: [String],
-        isSRGB: Bool = false
-    ) -> MTLTexture {
-        guard !names.isEmpty else {
-            fatalError("Texture paths are empty")
-        }
-
-        if names.count == 1 {
-            guard
-                let texture = TextureLoader.load(
-                    device: device,
-                    name: names[0],
-                    isSRGB: isSRGB
-                )
-            else {
-                fatalError("Failed to load texture")
-            }
-
-            return texture
-        }
-
-        guard
-            let textureArray = TextureLoader.loadAsArray(
-                device: device,
-                names: names,
-                isSRGB: isSRGB
-            )
-        else {
-            fatalError("Failed to load texture array")
-        }
-
-        return textureArray
-    }
-
     static func draw<
         TVertexUniforms: BitwiseCopyable,
         TFragmentUniforms: BitwiseCopyable

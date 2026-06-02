@@ -43,7 +43,7 @@ final class ImageRendererBase {
             device: renderContext.device
         )
 
-        texture = MetalUtils.loadTexture(
+        texture = TextureLoader.loadAsArray(
             device: renderContext.device,
             names: [imageName],
             isSRGB: false
@@ -88,7 +88,7 @@ final class ImageRendererBase {
         renderContext: RenderContext,
         imageName: String
     ) {
-        texture = MetalUtils.loadTexture(
+        texture = TextureLoader.loadAsArray(
             device: renderContext.device,
             names: [imageName],
             isSRGB: false
