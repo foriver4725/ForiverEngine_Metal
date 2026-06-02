@@ -67,14 +67,14 @@ final class Renderer: NSObject, MTKViewDelegate {
 
         self.samplerState = MetalUtils.createSamplerState(device: device)
 
-        self.textureArray = MetalUtils.loadTexture(
+        self.textureArray = TextureLoader.loadAsArray(
             device: device,
             names: [
                 "dirt_sand",
                 "grass_stone",
             ],
             isSRGB: false
-        )
+        )!
 
         let mesh = Mesh.createCube(
             centerWorldPosition: .zero,
