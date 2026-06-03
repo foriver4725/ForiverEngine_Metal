@@ -27,14 +27,14 @@ final class ItemSlotImageRenderer {
         initType: ImageType
     ) {
         imageTypeToTexture = [
-            .normal: TextureLoader.loadAsArray(
+            .normal: TextureLoader.load(
                 device: renderContext.device,
-                names: [Self.imageTypeToName[.normal]!],
+                name: Self.imageTypeToName[.normal]!,
                 isSRGB: false
             )!,
-            .selected: TextureLoader.loadAsArray(
+            .selected: TextureLoader.load(
                 device: renderContext.device,
-                names: [Self.imageTypeToName[.selected]!],
+                name: Self.imageTypeToName[.selected]!,
                 isSRGB: false
             )!,
         ]

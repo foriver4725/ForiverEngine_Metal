@@ -101,7 +101,7 @@ struct TextUiData {
         }
 
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba8Unorm,
+            pixelFormat: .rgba8Uint,
             width: dataSize.x,
             height: dataSize.y,
             mipmapped: false

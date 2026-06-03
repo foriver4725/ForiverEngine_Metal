@@ -6,6 +6,7 @@ final class OffscreenRendererBase {
     private var samplerState: MTLSamplerState!
 
     private var renderTexture: MTLTexture!
+    private var depthTexture: MTLTexture?
     private var renderMeshContext: RenderMeshContext!
 
     private var textures: [MTLTexture] = []
@@ -19,16 +20,27 @@ final class OffscreenRendererBase {
         windowSize: Vector2,
         textures sourceTextures: [MTLTexture],
         vertexFunctionName: String,
-        fragmentFunctionName: String
+        fragmentFunctionName: String,
+        useDepth: Bool = false
     ) {
         cbCount = 0
         srCount = sourceTextures.count
 
         renderTexture = Self.createRenderTexture(
             device: renderContext.device,
+            pixelFormat: metalView.colorPixelFormat,
             width: Int(windowSize.x),
             height: Int(windowSize.y)
         )
+
+        if useDepth {
+            depthTexture = Self.createDepthTexture(
+                device: renderContext.device,
+                pixelFormat: metalView.depthStencilPixelFormat,
+                width: Int(windowSize.x),
+                height: Int(windowSize.y)
+            )
+        }
 
         pipelineState = MetalUtils.createGraphicsPipelineState(
             device: renderContext.device,
@@ -66,6 +78,13 @@ final class OffscreenRendererBase {
         descriptor.colorAttachments[0].storeAction = .store
         descriptor.colorAttachments[0].clearColor =
             MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
+
+        if let depthTexture {
+            descriptor.depthAttachment.texture = depthTexture
+            descriptor.depthAttachment.loadAction = .clear
+            descriptor.depthAttachment.storeAction = .dontCare
+            descriptor.depthAttachment.clearDepth = 1.0
+        }
 
         return RenderTargetContext(
             drawable: nil,
@@ -123,11 +142,12 @@ final class OffscreenRendererBase {
 
     private static func createRenderTexture(
         device: MTLDevice,
+        pixelFormat: MTLPixelFormat,
         width: Int,
         height: Int
     ) -> MTLTexture {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba8Unorm,
+            pixelFormat: pixelFormat,
             width: width,
             height: height,
             mipmapped: false
@@ -142,6 +162,29 @@ final class OffscreenRendererBase {
 
         guard let texture = device.makeTexture(descriptor: descriptor) else {
             fatalError("Failed to create offscreen render texture")
+        }
+
+        return texture
+    }
+
+    private static func createDepthTexture(
+        device: MTLDevice,
+        pixelFormat: MTLPixelFormat,
+        width: Int,
+        height: Int
+    ) -> MTLTexture {
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: pixelFormat,
+            width: width,
+            height: height,
+            mipmapped: false
+        )
+
+        descriptor.usage = [.renderTarget]
+        descriptor.storageMode = .private
+
+        guard let texture = device.makeTexture(descriptor: descriptor) else {
+            fatalError("Failed to create offscreen depth texture")
         }
 
         return texture

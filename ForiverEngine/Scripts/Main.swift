@@ -257,8 +257,11 @@ final class Main: NSObject, MTKViewDelegate {
         frameTimeStatsCPU.record(timeAfterCPU - timeBeforeCPU)
 
         guard
+            // don't use depth because this is used only for text rendering (= post-processing)
             let currentRenderTargetContext =
-                swapChainManager.createCurrentRenderTargetContext()
+                swapChainManager.createCurrentRenderTargetContext(
+                    useDepth: false
+                )
         else {
             return
         }

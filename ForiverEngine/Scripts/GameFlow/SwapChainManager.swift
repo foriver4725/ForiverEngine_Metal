@@ -8,17 +8,26 @@ final class SwapChainManager {
         self.metalView = metalView
     }
 
-    func createCurrentRenderTargetContext() -> RenderTargetContext? {
+    func createCurrentRenderTargetContext(
+        useDepth: Bool
+    ) -> RenderTargetContext? {
         guard
             let metalView,
-            let renderPassDescriptor = metalView.currentRenderPassDescriptor
+            let drawable = metalView.currentDrawable,
+            let descriptor = metalView.currentRenderPassDescriptor
         else {
             return nil
         }
 
+        if !useDepth {
+            descriptor.depthAttachment.texture = nil
+            descriptor.depthAttachment.loadAction = .dontCare
+            descriptor.depthAttachment.storeAction = .dontCare
+        }
+
         return RenderTargetContext(
-            drawable: metalView.currentDrawable,
-            renderPassDescriptor: renderPassDescriptor
+            drawable: drawable,
+            renderPassDescriptor: descriptor
         )
     }
 

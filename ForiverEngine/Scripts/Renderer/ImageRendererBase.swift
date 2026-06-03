@@ -43,9 +43,9 @@ final class ImageRendererBase {
             device: renderContext.device
         )
 
-        texture = TextureLoader.loadAsArray(
+        texture = TextureLoader.load(
             device: renderContext.device,
-            names: [imageName],
+            name: imageName,
             isSRGB: false
         )
 

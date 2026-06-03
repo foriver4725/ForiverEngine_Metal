@@ -33,7 +33,8 @@ final class PostProcessRenderer {
             windowSize: windowSize,
             textures: [],
             vertexFunctionName: "PP_VSMain",
-            fragmentFunctionName: "PP_PSMain"
+            fragmentFunctionName: "PP_PSMain",
+            useDepth: true
         )
     }
 

@@ -29,9 +29,9 @@ final class ItemImageRenderer {
             uniqueKeysWithValues: Self.blockToName.map { block, name in
                 (
                     block,
-                    TextureLoader.loadAsArray(
+                    TextureLoader.load(
                         device: renderContext.device,
-                        names: [name],
+                        name: name,
                         isSRGB: false
                     )!
                 )
