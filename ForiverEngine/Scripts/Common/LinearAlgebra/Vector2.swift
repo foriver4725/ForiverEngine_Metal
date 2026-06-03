@@ -17,7 +17,13 @@ extension Vector2 {
     }
 
     var normed: Vector2 {
-        simd_normalize(self)
+        let len = len
+
+        if len <= epsilon {
+            return .zero
+        }
+
+        return self / len
     }
 
     static func dot(_ lhs: Vector2, _ rhs: Vector2) -> Float {
