@@ -290,6 +290,10 @@ final class Main: NSObject, MTKViewDelegate {
             renderTargetContext: textRenderTargetContext
         )
 
+        // ここから先は、textRenderTargetContext に重ね描きするので clear しない
+        textRenderTargetContext.renderPassDescriptor.colorAttachments[0]
+            .loadAction = .load
+
         pointerImageRenderer.draw(
             renderContext: renderContext,
             renderTargetContext: textRenderTargetContext
