@@ -56,8 +56,8 @@ final class Renderer: NSObject, MTKViewDelegate {
         self.pipelineState = MetalUtils.createGraphicsPipelineState(
             device: device,
             metalView: metalView,
-            vertexFunctionName: "vertex_main",
-            fragmentFunctionName: "fragment_main",
+            vertexFunctionName: "Basic_VSMain",
+            fragmentFunctionName: "Basic_PSMain",
             vertexDescriptor:
                 VertexDescriptorFactory.createVertexDataDescriptor(),
             useDSV: true
