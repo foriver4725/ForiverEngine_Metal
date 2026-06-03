@@ -1,13 +1,12 @@
 import Cocoa
-import Metal
 import MetalKit
 
 final class ViewController: NSViewController {
     private var metalView: MTKView!
-    private var renderer: Renderer!
+    private var main: Main!
 
     override func loadView() {
-        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 1600, height: 900))
+        self.view = NSView(frame: WindowHelper.windowRect)
     }
 
     override func viewDidLoad() {
@@ -19,12 +18,17 @@ final class ViewController: NSViewController {
 
         metalView = MTKView(frame: view.bounds, device: device)
         metalView.autoresizingMask = [.width, .height]
-        metalView.clearColor = MTLClearColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        metalView.clearColor = TerrainRenderer.skyColor
         metalView.depthStencilPixelFormat = .depth32Float
+        metalView.preferredFramesPerSecond = 60
 
         view.addSubview(metalView)
 
-        renderer = Renderer(metalView: metalView)
-        metalView.delegate = renderer
+        main = Main(metalView: metalView)
+        metalView.delegate = main
+    }
+
+    func saveWorld() {
+        main?.saveWorld()
     }
 }

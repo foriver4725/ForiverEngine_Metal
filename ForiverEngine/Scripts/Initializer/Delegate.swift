@@ -1,27 +1,32 @@
 import Cocoa
 
 @MainActor
-class AppDelegate: NSObject, NSApplicationDelegate {
+class Delegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow!
+    private var viewController: ViewController!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
 
-        let vc = ViewController()
+        viewController = ViewController()
 
-        window = EscWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1600, height: 900),
-            styleMask: [.titled, .closable, .resizable, .miniaturizable],
+        window = Window(
+            contentRect: WindowHelper.windowRect,
+            styleMask: [.titled, .closable, .miniaturizable],
             backing: .buffered,
             defer: false
         )
 
         window.title = "ForiverEngine"
         window.center()
-        window.contentViewController = vc
+        window.contentViewController = viewController
         window.makeKeyAndOrderFront(nil)
 
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        viewController.saveWorld()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(

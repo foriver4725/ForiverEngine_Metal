@@ -1,6 +1,6 @@
 import Cocoa
 
-final class EscWindow: NSWindow {
+final class Window: NSWindow {
     override func keyDown(with event: NSEvent) {
         if event.keyCode == 53 {
             NSApp.terminate(nil)

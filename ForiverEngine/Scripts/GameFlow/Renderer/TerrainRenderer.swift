@@ -111,10 +111,14 @@ final class TerrainRenderer {
     }
 
     func setSelectingBlock(
-        position: SIMD3<Int32>,
+        position: Lattice3,
         enabled: Bool
     ) {
-        cbData1.selectingBlockWorldPosition = position
+        cbData1.selectingBlockWorldPosition = SIMD3<Int32>(
+            Int32(position.x),
+            Int32(position.y),
+            Int32(position.z)
+        )
         cbData1.isSelectingBlock = enabled ? 1 : 0
     }
 
