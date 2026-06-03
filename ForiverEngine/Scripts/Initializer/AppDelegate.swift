@@ -1,7 +1,7 @@
 import Cocoa
 
 @MainActor
-class Delegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow!
     private var viewController: ViewController!
 
@@ -26,7 +26,7 @@ class Delegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        viewController.saveWorld()
+        viewController.onQuit()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(

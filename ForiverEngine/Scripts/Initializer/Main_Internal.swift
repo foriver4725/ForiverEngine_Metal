@@ -5,7 +5,7 @@ import Cocoa
 struct Main_Internal {
     static func main() {
         let app = NSApplication.shared
-        let delegate = Delegate()
+        let delegate = AppDelegate()
 
         app.delegate = delegate
         app.setActivationPolicy(.regular)

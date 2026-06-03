@@ -3,7 +3,7 @@ import MetalKit
 
 final class ViewController: NSViewController {
     private var metalView: MTKView!
-    private var main: Main!
+    private var delegate: ViewDelegate!
 
     override func loadView() {
         self.view = NSView(frame: WindowHelper.windowRect)
@@ -30,11 +30,11 @@ final class ViewController: NSViewController {
 
         view.addSubview(metalView)
 
-        main = Main(metalView: metalView)
-        metalView.delegate = main
+        delegate = ViewDelegate(metalView: metalView)
+        metalView.delegate = delegate
     }
 
-    func saveWorld() {
-        main?.saveWorld()
+    func onQuit() {
+        delegate.onQuit()
     }
 }

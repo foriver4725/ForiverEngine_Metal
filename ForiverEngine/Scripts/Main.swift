@@ -1,9 +1,6 @@
-import Cocoa
-import Metal
 import MetalKit
-import simd
 
-final class Main: NSObject, MTKViewDelegate {
+final class Main: MainProtocol {
     private let device: MTLDevice
     private let commandQueue: MTLCommandQueue
     private let renderContext: RenderContext
@@ -40,9 +37,9 @@ final class Main: NSObject, MTKViewDelegate {
 
     private var lastTime: Double = CACurrentMediaTime()
 
-    init(metalView: MTKView) {
+    init(_ view: MTKView) {
         let standardObjects =
-            MetalUtils.createStandardObjects(metalView: metalView)
+            MetalUtils.createStandardObjects(metalView: view)
 
         self.device = standardObjects.device
         self.commandQueue = standardObjects.commandQueue
@@ -52,11 +49,11 @@ final class Main: NSObject, MTKViewDelegate {
             commandQueue: standardObjects.commandQueue
         )
 
-        self.swapChainManager = SwapChainManager(metalView: metalView)
+        self.swapChainManager = SwapChainManager(metalView: view)
 
         let windowSize = Lattice2(
-            Int(metalView.drawableSize.width),
-            Int(metalView.drawableSize.height)
+            Int(view.drawableSize.width),
+            Int(view.drawableSize.height)
         )
 
         self.worldName = WorldDataSaveLoadManager.loadWorldName()
@@ -115,7 +112,7 @@ final class Main: NSObject, MTKViewDelegate {
 
         self.terrainRenderer = TerrainRenderer(
             renderContext: renderContext,
-            metalView: metalView,
+            metalView: view,
             windowSize: Vector2(Float(windowSize.x), Float(windowSize.y))
         )
 
@@ -125,7 +122,7 @@ final class Main: NSObject, MTKViewDelegate {
 
         self.postProcessRenderer = PostProcessRenderer(
             renderContext: renderContext,
-            metalView: metalView,
+            metalView: view,
             windowSize: Vector2(Float(windowSize.x), Float(windowSize.y)),
             clearColor: TerrainRenderer.skyColor,
             useDepth: true
@@ -133,7 +130,7 @@ final class Main: NSObject, MTKViewDelegate {
 
         self.textRenderer = TextRenderer(
             renderContext: renderContext,
-            metalView: metalView,
+            metalView: view,
             windowSize: Vector2(Float(windowSize.x), Float(windowSize.y)),
             clearColor: TerrainRenderer.skyColor,
             useDepth: false
@@ -141,27 +138,21 @@ final class Main: NSObject, MTKViewDelegate {
 
         self.pointerImageRenderer = PointerImageRenderer(
             renderContext: renderContext,
-            metalView: metalView,
+            metalView: view,
             windowSize: Vector2(Float(windowSize.x), Float(windowSize.y))
         )
 
         self.itemSlotManager = ItemSlotManager(
             renderContext: renderContext,
-            metalView: metalView,
+            metalView: view,
             windowSize: Vector2(Float(windowSize.x), Float(windowSize.y))
         )
-
-        super.init()
 
         mineCooldownTimer.countToFinishImmediately()
         placeCooldownTimer.countToFinishImmediately()
     }
 
-    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        // 必要ならPostProcess/Text/Cameraのリサイズ処理をここに追加
-    }
-
-    func draw(in view: MTKView) {
+    func onEveryFrame(_ view: MTKView) {
         let timeBeforeFrame = CACurrentMediaTime()
 
         let deltaSeconds = Float(timeBeforeFrame - lastTime)
@@ -316,7 +307,7 @@ final class Main: NSObject, MTKViewDelegate {
         frameTimeStatsPostFrame.record(timeAfterFrame - timeAfterGPU)
     }
 
-    func saveWorld() {
+    func onQuit() {
         let playerBinary = playerController.serializeTransform()
         let terrainBinary = chunksManager.serializeSaveChunks()
 
