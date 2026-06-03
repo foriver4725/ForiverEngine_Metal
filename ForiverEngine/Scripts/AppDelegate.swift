@@ -1,9 +1,9 @@
 import Cocoa
 
-//@main
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow!
-    
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
 
@@ -24,7 +24,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+    func applicationShouldTerminateAfterLastWindowClosed(
+        _ sender: NSApplication
+    ) -> Bool {
         true
     }
 }
