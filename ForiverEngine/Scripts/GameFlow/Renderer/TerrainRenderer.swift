@@ -73,8 +73,8 @@ final class TerrainRenderer {
         self.pipelineState = MetalUtils.createGraphicsPipelineState(
             device: renderContext.device,
             metalView: metalView,
-            vertexFunctionName: "VSMain",
-            fragmentFunctionName: "PSMain",
+            vertexFunctionName: "Basic_VSMain",
+            fragmentFunctionName: "Basic_PSMain",
             vertexDescriptor:
                 VertexDescriptorFactory
                 .createVertexDataDescriptor(),

@@ -65,7 +65,7 @@ float PSCheckIsSelectedBlock(
     return 0.0;
 }
 
-vertex V2P VSMain(
+vertex V2P Basic_VSMain(
     VSInput input [[stage_in]],
     constant VertexUniforms& uniforms [[buffer(1)]]
 )
@@ -87,7 +87,7 @@ vertex V2P VSMain(
     return output;
 }
 
-fragment PSOutput PSMain(
+fragment PSOutput Basic_PSMain(
     V2P input [[stage_in]],
     constant FragmentUniforms& uniforms [[buffer(0)]],
     texture2d_array<float> textureArray [[texture(0)]],

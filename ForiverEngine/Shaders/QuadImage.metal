@@ -22,7 +22,7 @@ struct PSOutput
     float4 color [[color(0)]];
 };
 
-vertex V2P VSMain(
+vertex V2P QuadImage_VSMain(
     VSInput input [[stage_in]]
 )
 {
@@ -34,7 +34,7 @@ vertex V2P VSMain(
     return output;
 }
 
-fragment PSOutput PSMain(
+fragment PSOutput QuadImage_PSMain(
     V2P input [[stage_in]],
     constant Uniforms& uniforms [[buffer(0)]],
     texture2d<float> texture [[texture(0)]],

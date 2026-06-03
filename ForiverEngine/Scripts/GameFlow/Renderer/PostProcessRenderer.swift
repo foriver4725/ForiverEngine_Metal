@@ -32,8 +32,8 @@ final class PostProcessRenderer {
             metalView: metalView,
             windowSize: windowSize,
             textures: [],
-            vertexFunctionName: "VSMain",
-            fragmentFunctionName: "PSMain"
+            vertexFunctionName: "PP_VSMain",
+            fragmentFunctionName: "PP_PSMain"
         )
     }
 

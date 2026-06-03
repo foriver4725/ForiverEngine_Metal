@@ -28,9 +28,9 @@ final class TextRenderer {
             )
         )
 
-        let fontTexture = TextureLoader.loadAsArray(
+        let fontTexture = TextureLoader.load(
             device: renderContext.device,
-            names: ["font"],
+            name: "font",
             isSRGB: false
         )!
 
@@ -59,8 +59,8 @@ final class TextRenderer {
                 fontTexture,  // t1 相当
                 textDataTexture,  // t2 相当
             ],
-            vertexFunctionName: "VSMain",
-            fragmentFunctionName: "PSMain"
+            vertexFunctionName: "Text_VSMain",
+            fragmentFunctionName: "Text_PSMain"
         )
     }
 

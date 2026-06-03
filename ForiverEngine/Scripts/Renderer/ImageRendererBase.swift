@@ -32,8 +32,8 @@ final class ImageRendererBase {
         pipelineState = MetalUtils.createGraphicsPipelineState(
             device: renderContext.device,
             metalView: metalView,
-            vertexFunctionName: "VSMain",
-            fragmentFunctionName: "PSMain",
+            vertexFunctionName: "QuadImage_VSMain",
+            fragmentFunctionName: "QuadImage_PSMain",
             vertexDescriptor:
                 VertexDescriptorFactory.createVertexDataQuadDescriptor(),
             useDSV: false
