@@ -16,7 +16,9 @@ final class PostProcessRenderer {
     init(
         renderContext: RenderContext,
         metalView: MTKView,
-        windowSize: Vector2
+        windowSize: Vector2,
+        clearColor: MTLClearColor,
+        useDepth: Bool
     ) {
         self.cbData0 = CBData0(
             windowSize: SIMD2<UInt32>(
@@ -34,7 +36,8 @@ final class PostProcessRenderer {
             textures: [],
             vertexFunctionName: "PP_VSMain",
             fragmentFunctionName: "PP_PSMain",
-            useDepth: true
+            clearColor: clearColor,
+            useDepth: useDepth
         )
     }
 

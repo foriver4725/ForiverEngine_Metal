@@ -18,7 +18,13 @@ final class ViewController: NSViewController {
 
         metalView = MTKView(frame: view.bounds, device: device)
         metalView.autoresizingMask = [.width, .height]
-        metalView.clearColor = TerrainRenderer.skyColor
+        // Since we draw via post-process, this value is not used. So set temporary to black.
+        metalView.clearColor = MTLClearColor(
+            red: 0,
+            green: 0,
+            blue: 0,
+            alpha: 1
+        )
         metalView.depthStencilPixelFormat = .depth32Float
         metalView.preferredFramesPerSecond = 60
 

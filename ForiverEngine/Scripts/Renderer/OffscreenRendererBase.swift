@@ -11,6 +11,7 @@ final class OffscreenRendererBase {
 
     private var textures: [MTLTexture] = []
 
+    private var clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
     private var cbCount: Int = 0
     private var srCount: Int = 0
 
@@ -21,7 +22,8 @@ final class OffscreenRendererBase {
         textures sourceTextures: [MTLTexture],
         vertexFunctionName: String,
         fragmentFunctionName: String,
-        useDepth: Bool = false
+        clearColor: MTLClearColor,
+        useDepth: Bool
     ) {
         cbCount = 0
         srCount = sourceTextures.count
@@ -68,6 +70,8 @@ final class OffscreenRendererBase {
         // D3D12版の t0 = RT/SR に相当
         textures = [renderTexture]
         textures.append(contentsOf: sourceTextures)
+
+        self.clearColor = clearColor
     }
 
     func createRenderTargetContext() -> RenderTargetContext {
@@ -76,8 +80,7 @@ final class OffscreenRendererBase {
         descriptor.colorAttachments[0].texture = renderTexture
         descriptor.colorAttachments[0].loadAction = .clear
         descriptor.colorAttachments[0].storeAction = .store
-        descriptor.colorAttachments[0].clearColor =
-            MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
+        descriptor.colorAttachments[0].clearColor = clearColor
 
         if let depthTexture {
             descriptor.depthAttachment.texture = depthTexture

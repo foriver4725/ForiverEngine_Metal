@@ -19,7 +19,9 @@ final class TextRenderer {
     init(
         renderContext: RenderContext,
         metalView: MTKView,
-        windowSize: Vector2
+        windowSize: Vector2,
+        clearColor: MTLClearColor,
+        useDepth: Bool
     ) {
         self.data = TextUiData.createEmpty(
             dataSize: Lattice2(
@@ -60,7 +62,9 @@ final class TextRenderer {
                 textDataTexture,  // t2 相当
             ],
             vertexFunctionName: "Text_VSMain",
-            fragmentFunctionName: "Text_PSMain"
+            fragmentFunctionName: "Text_PSMain",
+            clearColor: clearColor,
+            useDepth: useDepth
         )
     }
 

@@ -126,13 +126,17 @@ final class Main: NSObject, MTKViewDelegate {
         self.postProcessRenderer = PostProcessRenderer(
             renderContext: renderContext,
             metalView: metalView,
-            windowSize: Vector2(Float(windowSize.x), Float(windowSize.y))
+            windowSize: Vector2(Float(windowSize.x), Float(windowSize.y)),
+            clearColor: TerrainRenderer.skyColor,
+            useDepth: true
         )
 
         self.textRenderer = TextRenderer(
             renderContext: renderContext,
             metalView: metalView,
-            windowSize: Vector2(Float(windowSize.x), Float(windowSize.y))
+            windowSize: Vector2(Float(windowSize.x), Float(windowSize.y)),
+            clearColor: TerrainRenderer.skyColor,
+            useDepth: false
         )
 
         self.pointerImageRenderer = PointerImageRenderer(
