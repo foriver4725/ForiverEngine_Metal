@@ -127,24 +127,20 @@ final class TerrainRenderer {
         renderTargetContext: RenderTargetContext,
         renderMeshContext: RenderMeshContext
     ) {
-        for meshBuffers in renderMeshContext.meshBuffersList {
-            var vertexUniforms = cbData0
-            var fragmentUniforms = cbData1
+        var vertexUniforms = cbData0
+        var fragmentUniforms = cbData1
 
-            MetalUtils.draw(
-                commandQueue: renderContext.commandQueue,
-                renderPassDescriptor: renderTargetContext.renderPassDescriptor,
-                drawable: renderTargetContext.drawable,
-                pipelineState: pipelineState,
-                depthState: depthState,
-                vertexBuffer: meshBuffers.vertexBuffer,
-                indexBuffer: meshBuffers.indexBuffer,
-                indexCount: meshBuffers.indexCount,
-                textures: [textureArray],
-                samplerState: samplerState,
-                vertexUniforms: &vertexUniforms,
-                fragmentUniforms: &fragmentUniforms
-            )
-        }
+        MetalUtils.drawMany(
+            commandQueue: renderContext.commandQueue,
+            renderPassDescriptor: renderTargetContext.renderPassDescriptor,
+            drawable: renderTargetContext.drawable,
+            pipelineState: pipelineState,
+            depthState: depthState,
+            meshBuffersList: renderMeshContext.meshBuffersList,
+            textures: [textureArray],
+            samplerState: samplerState,
+            vertexUniforms: &vertexUniforms,
+            fragmentUniforms: &fragmentUniforms
+        )
     }
 }

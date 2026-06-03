@@ -161,4 +161,82 @@ enum MetalUtils {
 
         commandBuffer.commit()
     }
+
+    static func drawMany<
+        TVertexUniforms: BitwiseCopyable,
+        TFragmentUniforms: BitwiseCopyable
+    >(
+        commandQueue: MTLCommandQueue,
+        renderPassDescriptor: MTLRenderPassDescriptor,
+        drawable: CAMetalDrawable?,
+        pipelineState: MTLRenderPipelineState,
+        depthState: MTLDepthStencilState?,
+        meshBuffersList: [MeshBuffers],
+        textures: [MTLTexture],
+        samplerState: MTLSamplerState?,
+        vertexUniforms: inout TVertexUniforms,
+        fragmentUniforms: inout TFragmentUniforms
+    ) {
+        guard let commandBuffer = commandQueue.makeCommandBuffer(),
+            let encoder = commandBuffer.makeRenderCommandEncoder(
+                descriptor: renderPassDescriptor
+            )
+        else {
+            return
+        }
+
+        encoder.setRenderPipelineState(pipelineState)
+
+        if let depthState {
+            encoder.setDepthStencilState(depthState)
+        }
+
+        withUnsafeBytes(of: &vertexUniforms) {
+            encoder.setVertexBytes(
+                $0.baseAddress!,
+                length: $0.count,
+                index: 1
+            )
+        }
+
+        withUnsafeBytes(of: &fragmentUniforms) {
+            encoder.setFragmentBytes(
+                $0.baseAddress!,
+                length: $0.count,
+                index: 0
+            )
+        }
+
+        for (index, texture) in textures.enumerated() {
+            encoder.setFragmentTexture(texture, index: index)
+        }
+
+        if let samplerState {
+            encoder.setFragmentSamplerState(samplerState, index: 0)
+        }
+
+        for meshBuffers in meshBuffersList {
+            encoder.setVertexBuffer(
+                meshBuffers.vertexBuffer,
+                offset: 0,
+                index: 0
+            )
+
+            encoder.drawIndexedPrimitives(
+                type: .triangle,
+                indexCount: meshBuffers.indexCount,
+                indexType: .uint32,
+                indexBuffer: meshBuffers.indexBuffer,
+                indexBufferOffset: 0
+            )
+        }
+
+        encoder.endEncoding()
+
+        if let drawable {
+            commandBuffer.present(drawable)
+        }
+
+        commandBuffer.commit()
+    }
 }
