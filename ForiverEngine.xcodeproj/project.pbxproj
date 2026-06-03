@@ -10,9 +10,26 @@
 		9ECFFA842FC7CCF2002EEA18 /* ForiverEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForiverEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9E3535142FCFFF1500971C24 /* Exceptions for "ForiverEngine" folder in "ForiverEngine" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Shaders/Common/AA.metal,
+				Shaders/Common/CommonInclude.metal,
+				Shaders/Common/Lighting.metal,
+				Shaders/Common/ShaderConstants.metal,
+				Shaders/Common/TextSampling.metal,
+			);
+			target = 9ECFFA832FC7CCF2002EEA18 /* ForiverEngine */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9ECFFA862FC7CCF2002EEA18 /* ForiverEngine */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9E3535142FCFFF1500971C24 /* Exceptions for "ForiverEngine" folder in "ForiverEngine" target */,
+			);
 			path = ForiverEngine;
 			sourceTree = "<group>";
 		};
