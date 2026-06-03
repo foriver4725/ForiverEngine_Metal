@@ -70,6 +70,7 @@ final class Renderer: NSObject, MTKViewDelegate {
         self.textureArray = TextureLoader.loadAsArray(
             device: device,
             names: [
+                "air_invalid",
                 "dirt_sand",
                 "grass_stone",
             ],
@@ -78,7 +79,7 @@ final class Renderer: NSObject, MTKViewDelegate {
 
         let mesh = Mesh.createCube(
             centerWorldPosition: .zero,
-            textureIndex: 2
+            textureIndex: 4
         )
 
         self.meshBuffers = mesh.createMetalBuffers(device: device)
