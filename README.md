@@ -15,5 +15,5 @@ Reimplementation of [ForiverEngine](https://github.com/foriver4725/ForiverEngine
 ### Dislpay a 3D cube with texture
 https://github.com/user-attachments/assets/6dab8643-91e8-40eb-a537-6e53fe50f574
 
-## Reimplemented all but `main.cpp` from [ForiverEngine](https://github.com/foriver4725/ForiverEngine)
+### Reimplemented all but `main.cpp` from [ForiverEngine](https://github.com/foriver4725/ForiverEngine)
 https://github.com/user-attachments/assets/bbf9e8cb-2068-4233-9bc9-4dd0336de3e9
