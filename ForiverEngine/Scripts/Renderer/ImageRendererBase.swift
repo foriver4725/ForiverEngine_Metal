@@ -32,8 +32,8 @@ final class ImageRendererBase {
         pipelineState = MetalUtils.createGraphicsPipelineState(
             device: renderContext.device,
             metalView: metalView,
-            vertexFunctionName: "vertex_quad_image",
-            fragmentFunctionName: "fragment_quad_image",
+            vertexFunctionName: "VSMain",
+            fragmentFunctionName: "PSMain",
             vertexDescriptor:
                 VertexDescriptorFactory.createVertexDataQuadDescriptor(),
             useDSV: false
@@ -86,13 +86,9 @@ final class ImageRendererBase {
 
     func reUploadTexture(
         renderContext: RenderContext,
-        imageName: String
+        texture newTexture: MTLTexture
     ) {
-        texture = TextureLoader.loadAsArray(
-            device: renderContext.device,
-            names: [imageName],
-            isSRGB: false
-        )
+        texture = newTexture
     }
 
     func draw(

@@ -19,6 +19,10 @@ struct TextUiData {
         )
     }
 
+    func getDataSize() -> Lattice2 {
+        dataSize
+    }
+
     mutating func setText(
         positionIndex: Lattice2,
         text: Character,
@@ -28,6 +32,41 @@ struct TextUiData {
             color: color,
             fontTextureIndex: Text.convertToFontTextureIndex(text)
         )
+    }
+
+    mutating func setTexts(
+        beginPositionIndex: Lattice2,
+        texts: String,
+        color: Color = Text.defaultColor
+    ) {
+        let characters = Array(texts)
+
+        let textCount = characters.count
+
+        let beginDataIndex =
+            beginPositionIndex.y * dataSize.x
+            + beginPositionIndex.x
+
+        let endDataIndex = min(
+            beginDataIndex + textCount,
+            dataSize.x * dataSize.y
+        )
+
+        if beginDataIndex < 0 || beginDataIndex >= dataSize.x * dataSize.y {
+            return
+        }
+
+        for i in beginDataIndex..<endDataIndex {
+            let xi = i % dataSize.x
+            let yi = i / dataSize.x
+            let ti = i - beginDataIndex
+
+            setText(
+                positionIndex: Lattice2(xi, yi),
+                text: characters[ti],
+                color: color
+            )
+        }
     }
 
     mutating func clearRow(_ rowIndex: Int) {
@@ -43,40 +82,42 @@ struct TextUiData {
     }
 
     func createTexture(device: MTLDevice) -> MTLTexture {
-        let width = dataSize.x
-        let height = dataSize.y
+        let dataSizeTotal = dataSize.x * dataSize.y
         let bytesPerPixel = 4
 
         var pixels = [UInt8]()
-        pixels.reserveCapacity(width * height * bytesPerPixel)
+        pixels.reserveCapacity(dataSizeTotal * bytesPerPixel)
 
-        for y in 0..<height {
-            for x in 0..<width {
-                let d = data[y][x]
+        for i in 0..<dataSizeTotal {
+            let xi = i % dataSize.x
+            let yi = i / dataSize.x
 
-                pixels.append(UInt8(d.color.r * 255))
-                pixels.append(UInt8(d.color.g * 255))
-                pixels.append(UInt8(d.color.b * 255))
-                pixels.append(d.fontTextureIndex)
-            }
+            let singleData = data[yi][xi]
+
+            pixels.append(UInt8(singleData.color.r * 0xff))
+            pixels.append(UInt8(singleData.color.g * 0xff))
+            pixels.append(UInt8(singleData.color.b * 0xff))
+            pixels.append(singleData.fontTextureIndex)
         }
 
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: .rgba8Unorm,
-            width: width,
-            height: height,
+            width: dataSize.x,
+            height: dataSize.y,
             mipmapped: false
         )
+
+        descriptor.usage = [.shaderRead]
 
         guard let texture = device.makeTexture(descriptor: descriptor) else {
             fatalError("Failed to create text texture")
         }
 
         texture.replace(
-            region: MTLRegionMake2D(0, 0, width, height),
+            region: MTLRegionMake2D(0, 0, dataSize.x, dataSize.y),
             mipmapLevel: 0,
             withBytes: pixels,
-            bytesPerRow: width * bytesPerPixel
+            bytesPerRow: dataSize.x * bytesPerPixel
         )
 
         return texture

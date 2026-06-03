@@ -29,14 +29,14 @@ extension Vector2 {
     }
 
     static func lerp(_ from: Vector2, _ to: Vector2, _ t: Float) -> Vector2 {
-        let _t = Clamp(t, 0.0, 1.0)
+        let _t = MathUtils.clamp(t, 0.0, 1.0)
         return from + (to - from) * _t
     }
 
     static func slerp(_ from: Vector2, _ to: Vector2, _ t: Float) -> Vector2 {
-        let _t = Clamp(t, 0.0, 1.0)
+        let _t = MathUtils.clamp(t, 0.0, 1.0)
         let dot = dot(from.normed, to.normed)
-        let clampedDot = Clamp(dot, -1.0, 1.0)
+        let clampedDot = MathUtils.clamp(dot, -1.0, 1.0)
         let theta = acos(clampedDot) * _t
         let relativeVec = (to - from * dot).normed
         return (from * cos(theta)) + (relativeVec * sin(theta))

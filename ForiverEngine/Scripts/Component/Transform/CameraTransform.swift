@@ -1,7 +1,7 @@
 import simd
 
 struct CameraTransform {
-    var transform: Transform
+    private var transform: Transform
 
     var nearClip: Float  // near > 0
     var farClip: Float  // far > near
@@ -9,6 +9,28 @@ struct CameraTransform {
     var isPerspective: Bool = true  // true: 透視投影, false: 平行投影
     var fov: Float  // 垂直視野角 (ラジアン)
     var aspectRatio: Float  // 幅 / 高さ
+
+    var position: Vector3 {
+        get { transform.position }
+        set { transform.position = newValue }
+    }
+    var rotation: Quaternion {
+        get { transform.rotation }
+        set { transform.rotation = newValue }
+    }
+    var scale: Vector3 {
+        get { transform.scale }
+        set { transform.scale = newValue }
+    }
+    var right: Vector3 {
+        transform.right
+    }
+    var up: Vector3 {
+        transform.up
+    }
+    var forward: Vector3 {
+        transform.forward
+    }
 
     static func perspective(
         position: Vector3,
@@ -49,6 +71,14 @@ struct CameraTransform {
             fov: atan2(clipSizeXY.y * 0.5, clipRangeZ.x) * 2.0,  // nearクリップ面で平行投影を始めると想定するので...
             aspectRatio: clipSizeXY.x / clipSizeXY.y
         )
+    }
+
+    func calculateModelMatrix() -> Matrix4x4 {
+        transform.calculateModelMatrix()
+    }
+
+    func calculateModelMatrixInversed() -> Matrix4x4 {
+        transform.calculateModelMatrixInversed()
     }
 
     func calculateViewMatrix() -> Matrix4x4 {

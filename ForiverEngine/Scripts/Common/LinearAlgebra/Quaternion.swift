@@ -15,7 +15,7 @@ extension Quaternion {
     static func lerp(from: Quaternion, to: Quaternion, t: Float) -> Quaternion {
         let _from = from.vector
         let _to = to.vector
-        let _t = Clamp(t, 0.0, 1.0)
+        let _t = MathUtils.clamp(t, 0.0, 1.0)
 
         return Quaternion(
             ix: _from.x + (_to.x - _from.x) * _t,
@@ -29,7 +29,7 @@ extension Quaternion {
     {
         let _from = from.vector
         let _to = to.vector
-        let _t = Clamp(t, 0.0, 1.0)
+        let _t = MathUtils.clamp(t, 0.0, 1.0)
 
         var dot =
             _from.x * _to.x + _from.y * _to.y + _from.z * _to.z + _from.w
@@ -58,5 +58,9 @@ extension Quaternion {
 
     static func * (lhs: Quaternion, rhs: Vector3) -> Vector3 {
         lhs.act(rhs)
+    }
+
+    static func * (lhs: Quaternion, rhs: Quaternion) -> Quaternion {
+        simd_mul(lhs, rhs)
     }
 }

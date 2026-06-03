@@ -35,14 +35,14 @@ extension Vector3 {
     }
 
     static func lerp(_ from: Vector3, _ to: Vector3, _ t: Float) -> Vector3 {
-        let _t = Clamp(t, 0.0, 1.0)
+        let _t = MathUtils.clamp(t, 0.0, 1.0)
         return from + (to - from) * _t
     }
 
     static func slerp(_ from: Vector3, _ to: Vector3, _ t: Float) -> Vector3 {
-        let _t = Clamp(t, 0.0, 1.0)
+        let _t = MathUtils.clamp(t, 0.0, 1.0)
         let dot = dot(from.normed, to.normed)
-        let theta = acos(Clamp(dot, -1.0, 1.0)) * _t
+        let theta = acos(MathUtils.clamp(dot, -1.0, 1.0)) * _t
         let relativeVec = (to - from * dot).normed
         return (from * cos(theta)) + (relativeVec * sin(theta))
     }
