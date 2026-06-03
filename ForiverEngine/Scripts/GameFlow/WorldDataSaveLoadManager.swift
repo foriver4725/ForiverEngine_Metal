@@ -2,17 +2,21 @@ import Foundation
 
 enum WorldDataSaveLoadManager {
     static let worldSaveDataDirectory =
-        URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        getAppDirectory()
         .appendingPathComponent("saves")
         .appendingPathComponent("world")
 
     static let worldSaveDataExtension = "world"
 
     static let worldNameFilePath =
-        URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        getAppDirectory()
         .appendingPathComponent("WorldName.txt")
 
     static let defaultWorldName = "NewWorld"
+
+    private static func getAppDirectory() -> URL {
+        Bundle.main.bundleURL.deletingLastPathComponent()
+    }
 
     private static func getWorldSaveDataPath(_ worldName: String) -> URL {
         worldSaveDataDirectory
