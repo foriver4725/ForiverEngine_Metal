@@ -192,8 +192,8 @@ final class Chunk {
         for x in 0..<size {
             for z in 0..<size {
                 let noise = Noise.simplex2D(
-                    Float(x + size * chunkIndex.x) + seedX * noiseScale.x,
-                    Float(z + size * chunkIndex.y) + seedZ * noiseScale.x
+                    (Float(x + size * chunkIndex.x) + seedX) * noiseScale.x,
+                    (Float(z + size * chunkIndex.y) + seedZ) * noiseScale.x
                 )
 
                 let heightNormed = (noise + 1.0) * 0.5
