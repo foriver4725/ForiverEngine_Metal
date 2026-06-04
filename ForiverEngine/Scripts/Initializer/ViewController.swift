@@ -16,22 +16,27 @@ final class ViewController: NSViewController {
             fatalError("Metal is not supported")
         }
 
-        metalView = MTKView(frame: view.bounds, device: device)
-        metalView.autoresizingMask = [.width, .height]
+        let view = View(frame: view.bounds, device: device)
+        view.autoresizingMask = [.width, .height]
         // Since we draw via post-process, this value is not used. So set temporary to black.
-        metalView.clearColor = MTLClearColor(
+        view.clearColor = MTLClearColor(
             red: 0,
             green: 0,
             blue: 0,
             alpha: 1
         )
-        metalView.depthStencilPixelFormat = .depth32Float
-        metalView.preferredFramesPerSecond = 60
+        view.depthStencilPixelFormat = .depth32Float
+        view.preferredFramesPerSecond = 60
 
-        view.addSubview(metalView)
+        self.view.addSubview(view)
 
-        delegate = ViewDelegate(metalView: metalView)
-        metalView.delegate = delegate
+        delegate = ViewDelegate(metalView: view)
+        view.delegate = delegate
+
+        // Initialize the inputs.
+        view.initKeyTable()
+
+        metalView = view
     }
 
     func onQuit() {

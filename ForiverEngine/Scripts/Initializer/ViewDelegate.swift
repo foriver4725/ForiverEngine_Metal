@@ -12,7 +12,9 @@ final class ViewDelegate: NSObject, MTKViewDelegate {
     }
 
     func draw(in view: MTKView) {
-        main.onEveryFrame(view)
+        if !main.onEveryFrame(view) {
+            NSApp.terminate(nil)
+        }
     }
 
     func onQuit() {

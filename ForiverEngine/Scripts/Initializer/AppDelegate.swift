@@ -10,7 +10,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         viewController = ViewController()
 
-        window = Window(
+        window = NSWindow(
             contentRect: WindowHelper.windowRect,
             styleMask: [.titled, .closable, .miniaturizable],
             backing: .buffered,

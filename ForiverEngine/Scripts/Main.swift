@@ -152,7 +152,7 @@ final class Main: MainProtocol {
         placeCooldownTimer.countToFinishImmediately()
     }
 
-    func onEveryFrame(_ view: MTKView) {
+    func onEveryFrame(_ view: MTKView) -> Bool {
         let timeBeforeFrame = CACurrentMediaTime()
 
         let deltaSeconds = Float(timeBeforeFrame - lastTime)
@@ -161,12 +161,21 @@ final class Main: MainProtocol {
         let timeBeforeCPU = CACurrentMediaTime()
         frameTimeStatsPreFrame.record(timeBeforeCPU - timeBeforeFrame)
 
+        if InputHelper.getKeyInfo(.escape).pressedNow {
+            return false
+        }
+
         // TODO: InputManagerを作ったらここを置き換え
         let playerInputs = PlayerController.Inputs(
-            move: .zero,
-            look: .zero,
-            dashPressed: false,
-            jumpPressed: false
+            move: InputHelper.getAsAxis2D(
+                upKey: .w,
+                downKey: .s,
+                leftKey: .a,
+                rightKey: .d
+            ),
+            look: InputHelper.getMouseDelta(),
+            dashPressed: InputHelper.getKeyInfo(.lShift).pressed,
+            jumpPressed: InputHelper.getKeyInfo(.space).pressed,
         )
 
         playerController.onEveryFrame(
@@ -177,6 +186,22 @@ final class Main: MainProtocol {
 
         terrainRenderer.onPlayerCameraMatrixChanged(
             playerController.calculateVPMatrix()
+        )
+
+        let itemSlotSelectInputs = ItemSlotManager.SelectInputs(
+            select1: InputHelper.getKeyInfo(.n1).pressedNow,
+            select2: InputHelper.getKeyInfo(.n2).pressedNow,
+            select3: InputHelper.getKeyInfo(.n3).pressedNow,
+            select4: InputHelper.getKeyInfo(.n4).pressedNow,
+            select5: InputHelper.getKeyInfo(.n5).pressedNow,
+            select6: InputHelper.getKeyInfo(.n6).pressedNow,
+
+            selectLeft: InputHelper.getMouseWheelDelta() > 0.1,
+            selectRight: InputHelper.getMouseWheelDelta() < -0.1,
+        )
+        itemSlotManager.updateSelectingSlotByInput(
+            renderContext: renderContext,
+            inputs: itemSlotSelectInputs
         )
 
         let looking = playerController.pickLookingBlock(
@@ -194,12 +219,58 @@ final class Main: MainProtocol {
                 enabled: true
             )
 
+            if InputHelper.getKeyInfo(.mMouse).pressedNow {
+                let lookingBlock = chunksManager.getBlock(looking.blockPosition)
+                for i in 0..<ItemSlotManager.slotCount {
+                    if ItemSlotManager.slotItems[i] == lookingBlock {
+                        itemSlotManager.updateSelectingSlot(
+                            renderContext: renderContext,
+                            newIndex: i
+                        )
+                        break
+                    }
+                }
+            }
+
             mineCooldownTimer.onEveryFrame(deltaSeconds)
             placeCooldownTimer.onEveryFrame(deltaSeconds)
 
-            // TODO: 左クリック/右クリック入力を接続
-            // playerController.tryMineBlock(...)
-            // playerController.tryPlaceBlock(...)
+            if mineCooldownTimer.isFinished()
+                && InputHelper.getKeyInfo(.lMouse).pressed
+            {
+                mineCooldownTimer.reset()
+                _ = playerController.tryMineBlock(
+                    chunksManager: chunksManager,
+                    worldBlockPosition: looking.blockPosition,
+                    device: device
+                )
+            }
+
+            if placeCooldownTimer.isFinished()
+                && InputHelper.getKeyInfo(.rMouse).pressed
+            {
+                placeCooldownTimer.reset()
+
+                let placeBlock = ItemSlotManager.slotItems[
+                    itemSlotManager.getSelectingIndex()
+                ]
+                if placeBlock != .invalid {
+                    _ = playerController.tryPlaceBlock(
+                        chunksManager: chunksManager,
+                        worldBlockPosition: looking.blockPosition
+                            + looking.faceNormal,
+                        block: placeBlock,
+                        device: device
+                    )
+                }
+            }
+
+            if InputHelper.getKeyInfo(.lMouse).releasedNow {
+                mineCooldownTimer.countToFinishImmediately()
+            }
+            if InputHelper.getKeyInfo(.rMouse).releasedNow {
+                placeCooldownTimer.countToFinishImmediately()
+            }
         }
 
         playerExistingChunkIndex.setValue(
@@ -232,6 +303,10 @@ final class Main: MainProtocol {
             lookingBlockFaceNormal: looking.faceNormal
         )
 
+        if InputHelper.getKeyInfo(.f1).pressedNow {
+            isDebugFolded = !isDebugFolded
+        }
+
         if isDebugFolded {
             debugTextDisplayer.updateDataAsFold(
                 renderContext: renderContext,
@@ -248,6 +323,9 @@ final class Main: MainProtocol {
             )
         }
 
+        // Reset the input flags.
+        InputHelper.onEveryFrame()
+
         let timeAfterCPU = CACurrentMediaTime()
         frameTimeStatsCPU.record(timeAfterCPU - timeBeforeCPU)
 
@@ -258,7 +336,7 @@ final class Main: MainProtocol {
                     useDepth: false
                 )
         else {
-            return
+            return false
         }
 
         let postProcessRenderTargetContext =
@@ -305,6 +383,8 @@ final class Main: MainProtocol {
 
         let timeAfterFrame = CACurrentMediaTime()
         frameTimeStatsPostFrame.record(timeAfterFrame - timeAfterGPU)
+
+        return true
     }
 
     func onQuit() {
