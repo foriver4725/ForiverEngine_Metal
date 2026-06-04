@@ -165,7 +165,6 @@ final class Main: MainProtocol {
             return false
         }
 
-        // TODO: InputManagerを作ったらここを置き換え
         let playerInputs = PlayerController.Inputs(
             move: InputHelper.getAsAxis2D(
                 upKey: .w,
@@ -359,7 +358,7 @@ final class Main: MainProtocol {
             renderTargetContext: textRenderTargetContext
         )
 
-        // ここから先は、textRenderTargetContext に重ね描きするので clear しない
+        // We don't clear textRenderTargetContext from here because we will draw other UIs on it.
         textRenderTargetContext.renderPassDescriptor.colorAttachments[0]
             .loadAction = .load
 
