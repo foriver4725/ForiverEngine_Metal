@@ -159,7 +159,7 @@ final class Main: MainProtocol {
         lastTime = timeBeforeFrame
 
         let timeBeforeCPU = CACurrentMediaTime()
-        frameTimeStatsPreFrame.record(timeBeforeCPU - timeBeforeFrame)
+        frameTimeStatsPreFrame.record((timeBeforeCPU - timeBeforeFrame) * 1000)
 
         if InputHelper.getKeyInfo(.escape).pressedNow {
             return false
@@ -327,7 +327,7 @@ final class Main: MainProtocol {
         InputHelper.onEveryFrame()
 
         let timeAfterCPU = CACurrentMediaTime()
-        frameTimeStatsCPU.record(timeAfterCPU - timeBeforeCPU)
+        frameTimeStatsCPU.record((timeAfterCPU - timeBeforeCPU) * 1000)
 
         guard
             // don't use depth because this is used only for text rendering (= post-processing)
@@ -379,10 +379,10 @@ final class Main: MainProtocol {
         )
 
         let timeAfterGPU = CACurrentMediaTime()
-        frameTimeStatsGPU.record(timeAfterGPU - timeAfterCPU)
+        frameTimeStatsGPU.record((timeAfterGPU - timeAfterCPU) * 1000)
 
         let timeAfterFrame = CACurrentMediaTime()
-        frameTimeStatsPostFrame.record(timeAfterFrame - timeAfterGPU)
+        frameTimeStatsPostFrame.record((timeAfterFrame - timeAfterGPU) * 1000)
 
         return true
     }
