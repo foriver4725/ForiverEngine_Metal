@@ -29,7 +29,7 @@ enum DebugText {
 
     static func position(_ playerController: PlayerController) -> String {
         let blockPosition = playerController.getFootBlockPosition()
-        return "Position : \(blockPosition)"
+        return "Position : \(blockPosition.toString())"
     }
 
     static func lookingBlock(
@@ -38,7 +38,7 @@ enum DebugText {
     ) -> String {
         if info.isLooking {
             return
-                "Looking Block : \(getBlockName(chunksManager.getBlock(info.lookingBlockWorldPosition)))(At=\(info.lookingBlockWorldPosition),Face=\(info.lookingBlockFaceNormal))"
+                "Looking Block : \(getBlockName(chunksManager.getBlock(info.lookingBlockWorldPosition)))(At=\(info.lookingBlockWorldPosition.toString()),Face=\(info.lookingBlockFaceNormal.toString()))"
         } else {
             return "Looking Block : None"
         }
@@ -49,7 +49,7 @@ enum DebugText {
         let chunkIndex = Chunk.getIndex(blockPosition)
 
         if Chunk.isValidIndex(chunkIndex) {
-            return "Chunk Index : \(chunkIndex)"
+            return "Chunk Index : \(chunkIndex.toString())"
         } else {
             return "Chunk Index : Invalid"
         }
@@ -63,7 +63,7 @@ enum DebugText {
         let chunkLocalPosition = Chunk.getLocalBlockPosition(blockPosition)
 
         if Chunk.isValidIndex(chunkIndex) {
-            return "Chunk Local Position : \(chunkLocalPosition)"
+            return "Chunk Local Position : \(chunkLocalPosition.toString())"
         } else {
             return "Chunk Local Position : Invalid"
         }
@@ -73,7 +73,7 @@ enum DebugText {
         let drawRangeInfo = chunksManager.getDrawRangeInfo()
 
         return
-            "Drawing Chunks : \(drawRangeInfo.getRangeMin())-\(drawRangeInfo.getRangeMax())"
+            "Drawing Chunks : \(drawRangeInfo.getRangeMin().toString())-\(drawRangeInfo.getRangeMax().toString())"
     }
 
     static func collisionRange(_ playerController: PlayerController) -> String {
@@ -85,7 +85,7 @@ enum DebugText {
         let maxPosition = minPosition + PlayerController.collisionSize
 
         return
-            "Player Collision Range : \(PlayerControl.getBlockPosition(minPosition))-\(PlayerControl.getBlockPosition(maxPosition))"
+            "Player Collision Range : \(PlayerControl.getBlockPosition(minPosition).toString())-\(PlayerControl.getBlockPosition(maxPosition).toString())"
     }
 
     static func floorCeilHeight(
