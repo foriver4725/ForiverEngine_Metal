@@ -48,6 +48,8 @@ enum InputHelper {
     private static var mouseWheelDelta: Float = 0
     private static var mouseDelta: Vector2 = .zero
 
+    private static var isCursorHidden: Bool = false
+
     static func initKeyTable() {
         for i in keyTable.indices {
             keyTable[i] = KeyInfo(
@@ -108,6 +110,23 @@ enum InputHelper {
         mouseDelta += delta
     }
 
+    static func setCursorActive(_ active: Bool) {
+        if active && isCursorHidden {
+            CGAssociateMouseAndMouseCursorPosition(boolean_t(truncating: true))
+            NSCursor.unhide()
+            isCursorHidden = false
+        } else if !active && !isCursorHidden {
+            CGAssociateMouseAndMouseCursorPosition(boolean_t(truncating: false))
+            NSCursor.hide()
+            isCursorHidden = true
+        }
+    }
+
+    // Manual clear
+    static func clearMouseDelta() {
+        mouseDelta = .zero
+    }
+
     static func getKeyInfo(_ key: Key) -> KeyInfo {
         keyTable[Int(key.rawValue)]
     }
@@ -117,7 +136,7 @@ enum InputHelper {
     }
 
     static func getMouseDelta() -> Vector2 {
-        mouseDelta
+        Vector2(x: mouseDelta.x, y: -mouseDelta.y)  // Up is positive
     }
 
     static func getAsAxis1D(

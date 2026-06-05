@@ -1,13 +1,44 @@
 import MetalKit
 
 final class View: MTKView {
+    private var trackingArea: NSTrackingArea?
+
     override var acceptsFirstResponder: Bool {
         true
     }
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+
         window?.makeFirstResponder(self)
+        window?.acceptsMouseMovedEvents = true
+
+        InputHelper.setCursorActive(false)
+        warpMouseToCenter()
+        InputHelper.clearMouseDelta()
+    }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+
+        if let trackingArea {
+            removeTrackingArea(trackingArea)
+        }
+
+        let newTrackingArea = NSTrackingArea(
+            rect: bounds,
+            options: [
+                .activeAlways,
+                .mouseMoved,
+                .enabledDuringMouseDrag,
+                .inVisibleRect,
+            ],
+            owner: self,
+            userInfo: nil
+        )
+
+        addTrackingArea(newTrackingArea)
+        trackingArea = newTrackingArea
     }
 
     override func keyDown(with event: NSEvent) {
@@ -73,6 +104,29 @@ final class View: MTKView {
 
     override func scrollWheel(with event: NSEvent) {
         InputHelper.onMouseWheelDelta(Float(event.scrollingDeltaY))
+    }
+
+    // NOTE: This results to large mouse delta.
+    private func warpMouseToCenter() {
+        guard let window else {
+            return
+        }
+
+        let centerInWindow = CGPoint(
+            x: bounds.midX,
+            y: bounds.midY
+        )
+
+        let centerOnScreen = convert(
+            centerInWindow,
+            to: nil
+        )
+
+        let screenPoint = window.convertPoint(
+            toScreen: centerOnScreen
+        )
+
+        CGWarpMouseCursorPosition(screenPoint)
     }
 
     func initKeyTable() {
