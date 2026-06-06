@@ -13,7 +13,7 @@
 
 ## Download
 
-- Downloads a ZIP from [the latest release](https://github.com/foriver4725/ForiverEngine/releases).  
+- Downloads a ZIP from [the latest release](https://github.com/foriver4725/ForiverEngine_Metal/releases).  
 - Executes the .app inside the folder.  
 
 ## Note
