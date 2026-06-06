@@ -7,6 +7,10 @@ Reimplementation of [ForiverEngine](https://github.com/foriver4725/ForiverEngine
 - Xcode
 - Swift
 
+## Note
+I could not transfer the save system from C++ implementation, because of the architecture differences.  
+When the game is launched, it always begin with a new world.  
+
 ## Development History
 
 ### Display a 2D mesh with texture
