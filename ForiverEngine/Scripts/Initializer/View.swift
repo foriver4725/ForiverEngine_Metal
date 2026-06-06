@@ -41,6 +41,24 @@ final class View: MTKView {
         trackingArea = newTrackingArea
     }
 
+    override func flagsChanged(with event: NSEvent) {
+        let key = InputHelper.convertNSEventToKey(event)
+
+        switch key {
+        case .lShift, .rShift:
+            updateModifierKey(key, flag: .shift, event: event)
+
+        case .lCtrl, .rCtrl:
+            updateModifierKey(key, flag: .control, event: event)
+
+        case .lAlt, .rAlt:
+            updateModifierKey(key, flag: .option, event: event)
+
+        default:
+            break
+        }
+    }
+
     override func keyDown(with event: NSEvent) {
         InputHelper.onPressed(
             InputHelper.convertNSEventToKey(event)
@@ -104,6 +122,18 @@ final class View: MTKView {
 
     override func scrollWheel(with event: NSEvent) {
         InputHelper.onMouseWheelDelta(Float(event.scrollingDeltaY))
+    }
+
+    private func updateModifierKey(
+        _ key: Key,
+        flag: NSEvent.ModifierFlags,
+        event: NSEvent
+    ) {
+        if event.modifierFlags.contains(flag) {
+            InputHelper.onPressed(key)
+        } else {
+            InputHelper.onReleased(key)
+        }
     }
 
     // NOTE: This results to large mouse delta.
