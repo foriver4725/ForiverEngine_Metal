@@ -27,7 +27,9 @@ final class ImageRendererBase {
         position: Vector2,
         size: Vector2,
         zOrder: UInt16 = 0,
-        initDrawEnabled: Bool = true
+        useDSV: Bool,
+        useAlphaBlend: Bool,
+        initDrawEnabled: Bool
     ) {
         pipelineState = MetalUtils.createGraphicsPipelineState(
             device: renderContext.device,
@@ -36,7 +38,8 @@ final class ImageRendererBase {
             fragmentFunctionName: "QuadImage_PSMain",
             vertexDescriptor:
                 VertexDescriptorFactory.createVertexDataQuadDescriptor(),
-            useDSV: false
+            useDSV: useDSV,
+            useAlphaBlend: useAlphaBlend
         )
 
         samplerState = MetalUtils.createSamplerState(

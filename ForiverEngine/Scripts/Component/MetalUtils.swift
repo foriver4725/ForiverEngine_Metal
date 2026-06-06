@@ -22,7 +22,8 @@ enum MetalUtils {
         vertexFunctionName: String,
         fragmentFunctionName: String,
         vertexDescriptor: MTLVertexDescriptor,
-        useDSV: Bool
+        useDSV: Bool,
+        useAlphaBlend: Bool
     ) -> MTLRenderPipelineState {
         guard let library = device.makeDefaultLibrary(),
             let vertexFunction = library.makeFunction(name: vertexFunctionName),
@@ -37,7 +38,22 @@ enum MetalUtils {
         descriptor.vertexFunction = vertexFunction
         descriptor.vertexDescriptor = vertexDescriptor
         descriptor.fragmentFunction = fragmentFunction
-        descriptor.colorAttachments[0].pixelFormat = metalView.colorPixelFormat
+
+        let colorAttachment = descriptor.colorAttachments[0]!
+        colorAttachment.pixelFormat = metalView.colorPixelFormat
+
+        if useAlphaBlend {
+            colorAttachment.isBlendingEnabled = true
+
+            colorAttachment.rgbBlendOperation = .add
+            colorAttachment.alphaBlendOperation = .add
+
+            colorAttachment.sourceRGBBlendFactor = .sourceAlpha
+            colorAttachment.destinationRGBBlendFactor = .oneMinusSourceAlpha
+
+            colorAttachment.sourceAlphaBlendFactor = .one
+            colorAttachment.destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        }
 
         if useDSV {
             descriptor.depthAttachmentPixelFormat =

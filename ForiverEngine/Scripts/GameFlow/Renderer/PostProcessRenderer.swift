@@ -17,8 +17,7 @@ final class PostProcessRenderer {
         renderContext: RenderContext,
         metalView: MTKView,
         windowSize: Vector2,
-        clearColor: MTLClearColor,
-        useDepth: Bool
+        clearColor: Color
     ) {
         self.cbData0 = CBData0(
             windowSize: SIMD2<UInt32>(
@@ -37,7 +36,8 @@ final class PostProcessRenderer {
             vertexFunctionName: "PP_VSMain",
             fragmentFunctionName: "PP_PSMain",
             clearColor: clearColor,
-            useDepth: useDepth
+            useDepthTexture: true,  // Same to TerrainRenderer
+            useAlphaBlend: false,
         )
     }
 

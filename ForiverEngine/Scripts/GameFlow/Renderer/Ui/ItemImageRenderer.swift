@@ -46,6 +46,8 @@ final class ItemImageRenderer {
             position: position,
             size: size,
             zOrder: Self.zOrder,
+            useDSV: false,
+            useAlphaBlend: true,
             initDrawEnabled: Self.isDrawableBlock(initType)
         )
     }

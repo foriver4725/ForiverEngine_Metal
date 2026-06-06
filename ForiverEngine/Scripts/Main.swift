@@ -124,16 +124,14 @@ final class Main: MainProtocol {
             renderContext: renderContext,
             metalView: view,
             windowSize: Vector2(Float(windowSize.x), Float(windowSize.y)),
-            clearColor: TerrainRenderer.skyColor,
-            useDepth: true
+            clearColor: TerrainRenderer.skyColor
         )
 
         self.textRenderer = TextRenderer(
             renderContext: renderContext,
             metalView: view,
             windowSize: Vector2(Float(windowSize.x), Float(windowSize.y)),
-            clearColor: TerrainRenderer.skyColor,
-            useDepth: false
+            clearColor: .black
         )
 
         self.pointerImageRenderer = PointerImageRenderer(

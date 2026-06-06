@@ -3,11 +3,11 @@ import MetalKit
 import simd
 
 final class TerrainRenderer {
-    static let skyColor = MTLClearColor(
-        red: 60.0 / 255.0,
-        green: 150.0 / 255.0,
-        blue: 210.0 / 255.0,
-        alpha: 1.0
+    static let skyColor = Color(
+        r: 60.0 / 255.0,
+        g: 150.0 / 255.0,
+        b: 210.0 / 255.0,
+        a: 1.0
     )
 
     static let blockTextureNames = [
@@ -78,7 +78,8 @@ final class TerrainRenderer {
             vertexDescriptor:
                 VertexDescriptorFactory
                 .createVertexDataDescriptor(),
-            useDSV: true
+            useDSV: true,
+            useAlphaBlend: false
         )
 
         self.depthState = MetalUtils.createDepthStencilState(

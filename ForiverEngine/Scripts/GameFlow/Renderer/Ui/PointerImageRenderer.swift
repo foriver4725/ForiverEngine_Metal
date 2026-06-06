@@ -15,7 +15,10 @@ final class PointerImageRenderer {
             windowSize: windowSize,
             imageName: "pointer",
             position: windowSize / 2,
-            size: Vector2(24, 24)
+            size: Vector2(24, 24),
+            useDSV: false,
+            useAlphaBlend: true,
+            initDrawEnabled: true
         )
     }
 

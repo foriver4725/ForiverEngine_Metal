@@ -46,7 +46,10 @@ final class ItemSlotImageRenderer {
             imageName: Self.imageTypeToName[initType]!,
             position: position,
             size: size,
-            zOrder: Self.zOrder
+            zOrder: Self.zOrder,
+            useDSV: false,
+            useAlphaBlend: true,
+            initDrawEnabled: true
         )
     }
 

@@ -11,7 +11,7 @@ final class OffscreenRendererBase {
 
     private var textures: [MTLTexture] = []
 
-    private var clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
+    private var clearColor: Color = .black
     private var cbCount: Int = 0
     private var srCount: Int = 0
 
@@ -22,8 +22,9 @@ final class OffscreenRendererBase {
         textures sourceTextures: [MTLTexture],
         vertexFunctionName: String,
         fragmentFunctionName: String,
-        clearColor: MTLClearColor,
-        useDepth: Bool
+        clearColor: Color,
+        useDepthTexture: Bool,
+        useAlphaBlend: Bool
     ) {
         cbCount = 0
         srCount = sourceTextures.count
@@ -35,7 +36,7 @@ final class OffscreenRendererBase {
             height: Int(windowSize.y)
         )
 
-        if useDepth {
+        if useDepthTexture {
             depthTexture = Self.createDepthTexture(
                 device: renderContext.device,
                 pixelFormat: metalView.depthStencilPixelFormat,
@@ -51,7 +52,8 @@ final class OffscreenRendererBase {
             fragmentFunctionName: fragmentFunctionName,
             vertexDescriptor:
                 VertexDescriptorFactory.createVertexDataQuadDescriptor(),
-            useDSV: false
+            useDSV: false,
+            useAlphaBlend: useAlphaBlend
         )
 
         samplerState = MetalUtils.createSamplerState(
@@ -80,7 +82,7 @@ final class OffscreenRendererBase {
         descriptor.colorAttachments[0].texture = renderTexture
         descriptor.colorAttachments[0].loadAction = .clear
         descriptor.colorAttachments[0].storeAction = .store
-        descriptor.colorAttachments[0].clearColor = clearColor
+        descriptor.colorAttachments[0].clearColor = clearColor.toMTLClearColor()
 
         if let depthTexture {
             descriptor.depthAttachment.texture = depthTexture

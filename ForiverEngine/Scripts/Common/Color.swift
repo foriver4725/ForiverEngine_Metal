@@ -1,3 +1,5 @@
+import Metal
+
 struct Color {
     var r: Float
     var g: Float
@@ -13,4 +15,15 @@ struct Color {
     static let yellow = Color(r: 1, g: 1, b: 0, a: 1)
     static let magenta = Color(r: 1, g: 0, b: 1, a: 1)
     static let cyan = Color(r: 0, g: 1, b: 1, a: 1)
+}
+
+extension Color {
+    func toMTLClearColor() -> MTLClearColor {
+        MTLClearColor(
+            red: Double(r),
+            green: Double(g),
+            blue: Double(b),
+            alpha: Double(a)
+        )
+    }
 }
